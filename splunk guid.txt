@@ -14,9 +14,10 @@ chmod 400 splunik.pem
 ./install-splunk-enterprise.sh
 
 
+THIS IS CONFIGURE MUTLITPLE UFS TO IDX 
 =============configure multipe ufs to idx =====
-✅ Final Script: configure-ufs-to-indexer.sh
-This script:
+ configure-ufs-to-indexer.sh
+
 
 Connects to each UF host from uf-hosts.csv
 
@@ -27,7 +28,7 @@ Starts (or restarts) the UF service
 📁 Prerequisites
 UFs already installed on each host at /opt/splunkforwarder
 
-Indexer IP: 18.118.164.125 (adjust as needed)
+Indexer IP: 18.118.164.125 ==here your what idx to configure uf 
 
 Key file: splunik.pem
 
