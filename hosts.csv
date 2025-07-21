@@ -1,0 +1,5 @@
+HOSTNAME,USERNAME,PASSWORD,NEW_HOSTNAME
+ec2-52-12-220-51.us-west-2.compute.amazonaws.com,admin,Ram3477@1,IDX
+ec2-54-191-63-204.us-west-2.compute.amazonaws.com,admin,Ram3477@2,SH
+ec2-54-190-189-100.us-west-2.compute.amazonaws.com,admin,Ram3477@3,DS
+

@@ -1,0 +1,79 @@
+wget -O splunkforwarder-9.4.3-237ebbd22314-linux-amd64.tgz "https://download.splunk.com/products/universalforwarder/releases/9.4.3/linux/splunkforwarder-9.4.3-237ebbd22314-linux-amd64.tgz"
+
+
+
+wget -O splunk-9.4.3-237ebbd22314-linux-amd64.tgz "https://download.splunk.com/products/splunk/releases/9.4.3/linux/splunk-9.4.3-237ebbd22314-linux-amd64.tgz"
+
+===Before Running
+chmod +x install-splunk-enterprise.sh
+
+===Set PEM file permissions:
+chmod 400 splunik.pem
+
+===Run the script:
+./install-splunk-enterprise.sh
+
+
+=============configure multipe ufs to idx =====
+✅ Final Script: configure-ufs-to-indexer.sh
+This script:
+
+Connects to each UF host from uf-hosts.csv
+
+Adds or replaces outputs.conf to forward data to your indexer
+
+Starts (or restarts) the UF service
+
+📁 Prerequisites
+UFs already installed on each host at /opt/splunkforwarder
+
+Indexer IP: 18.118.164.125 (adjust as needed)
+
+Key file: splunik.pem
+
+File: uf-hosts.csv with list of hostnames
+
+HOSTNAME,USERNAME,PASSWORD,NEW_HOSTNAME
+ec2-52-12-220-51.us-west-2.compute.amazonaws.com,admin,Ram3477@1,IDX
+
+📜 Script: configure-ufs-to-indexer.sh
+
+#!/bin/bash
+
+# Splunk Indexer IP
+INDEXER_IP="18.118.164.125"
+
+# SSH Key
+KEY_FILE="splunik.pem"
+
+# Read hostnames from CSV (skip header)
+tail -n +2 uf-hosts.csv | while IFS=, read -r HOSTNAME; do
+  if [[ -z "$HOSTNAME" || "$HOSTNAME" == hostname* ]]; then
+    continue
+  fi
+
+  echo "🔧 Configuring UF on $HOSTNAME to forward to $INDEXER_IP"
+
+  ssh -o StrictHostKeyChecking=no -i "$KEY_FILE" ubuntu@"$HOSTNAME" <<EOF
+    sudo tee /opt/splunkforwarder/etc/system/local/outputs.conf > /dev/null <<CONF
+[tcpout]
+defaultGroup = default-autolb-group
+
+[tcpout:default-autolb-group]
+server = ${INDEXER_IP}:9997
+
+[tcpout-server://${INDEXER_IP}:9997]
+CONF
+
+    echo " Restarting UF to apply forwarding settings..."
+    sudo /opt/splunkforwarder/bin/splunk restart
+EOF
+
+  echo "✅ UF on $HOSTNAME now forwarding to $INDEXER_IP:9997"
+done
+
+
+✅ Run the Script
+
+chmod +x configure-ufs-to-indexer.sh
+./configure-ufs-to-indexer.sh
